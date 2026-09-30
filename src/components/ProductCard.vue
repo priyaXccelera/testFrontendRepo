@@ -1,13 +1,21 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { Product } from '@/types'
+import { useCartStore } from '@/stores/cart'
 
-defineProps<{
+const props = defineProps<{
   product: Product
 }>()
 
+const cartStore = useCartStore()
+const justAdded = ref(false)
+
 function handleAddToCart() {
-  // MOCK: Non-functional Add to Cart button UI
-  // In a real app, this would trigger cart logic
+  cartStore.addToCart(props.product)
+  justAdded.value = true
+  setTimeout(() => {
+    justAdded.value = false
+  }, 1500)
 }
 </script>
 
@@ -36,9 +44,14 @@ function handleAddToCart() {
 
       <button
         @click="handleAddToCart"
-        class="w-full bg-primary-accent text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+        :class="[
+          'w-full font-semibold py-2 px-4 rounded-lg transition-colors',
+          justAdded
+            ? 'bg-green-600 text-white'
+            : 'bg-primary-accent text-white hover:bg-blue-600',
+        ]"
       >
-        Add to Cart
+        {{ justAdded ? 'Added!' : 'Add to Cart' }}
       </button>
     </div>
   </div>
